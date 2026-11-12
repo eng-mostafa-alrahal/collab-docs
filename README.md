@@ -163,7 +163,7 @@ Verify the deployed API at `https://<your-render-service>.onrender.com/api/healt
 Create a **Cloudflare Pages** project connected to your GitHub repository:
 
 - **Root directory:** `frontend`
-- **Build command:** `npm install --legacy-peer-deps && npm run build:pages`
+- **Build command:** `npm run build:pages`
 - **Build output directory:** `dist/frontend/browser`
 - **Environment variables:**
   - `NODE_VERSION` = `22`
