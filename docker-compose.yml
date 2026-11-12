@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ajaia-docs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ajaia
+      POSTGRES_PASSWORD: ajaia_dev_password
+      POSTGRES_DB: ajaia_docs
+    ports:
+      - "5432:5432"
+    volumes:
+      - ajaia_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ajaia -d ajaia_docs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: ajaia-docs-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://ajaia:ajaia_dev_password@postgres:5432/ajaia_docs
+      CORS_ORIGINS: http://localhost:4200
+      MAX_UPLOAD_SIZE: 2097152
+      ENVIRONMENT: development
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ajaia-docs-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "4200:80"
+
+volumes:
+  ajaia_postgres_data:
