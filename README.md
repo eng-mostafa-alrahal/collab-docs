@@ -134,3 +134,41 @@ No passwords are required. Use the account switcher in the top navigation bar:
 - Shared editing is persistent and sequential with optimistic version checking (`409 Conflict` on stale saves), **not** real-time simultaneous WebSocket/CRDT co-editing.
 - Document comments, suggestion mode, and revision history are intentionally omitted from this initial release.
 
+## Production Deployment (Neon + Render + Cloudflare Pages)
+
+### 1. Database — Neon PostgreSQL
+
+1. Create a free PostgreSQL database in **Neon** and copy the connection string (for example: `postgresql://user:password@ep-example.us-east-2.aws.neon.tech/neondb?sslmode=require`).
+2. `backend/app/config.py` automatically normalizes `postgres://` and `postgresql://` to `postgresql+psycopg://` for SQLAlchemy 2.0 + `psycopg` 3.
+
+### 2. Backend — Render
+
+You can deploy via the included [render.yaml](render.yaml) Blueprint or create a Web Service manually with:
+
+- **Root Directory:** `backend`
+- **Runtime:** Python 3.12
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `alembic upgrade head && python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Health Check Path:** `/api/health`
+- **Environment Variables:**
+  - `DATABASE_URL` = your Neon connection string
+  - `CORS_ORIGINS` = your Cloudflare Pages URL (for example `https://ajaia-docs.pages.dev` — update this after creating the Cloudflare Pages project)
+  - `MAX_UPLOAD_SIZE` = `2097152`
+  - `ENVIRONMENT` = `production`
+
+Verify the deployed API at `https://<your-render-service>.onrender.com/api/health` and `/docs`.
+
+### 3. Frontend — Cloudflare Pages
+
+Create a **Cloudflare Pages** project connected to your GitHub repository:
+
+- **Root directory:** `frontend`
+- **Build command:** `npm install --legacy-peer-deps && npm run build:pages`
+- **Build output directory:** `dist/frontend/browser`
+- **Environment variables:**
+  - `NODE_VERSION` = `22`
+  - `API_URL` = `https://<your-render-service>.onrender.com/api`
+
+Cloudflare Pages automatically serves `index.html` for Angular client-side routes like `/documents/1`. After Cloudflare Pages gives you the live `https://*.pages.dev` URL, set `CORS_ORIGINS` on Render to match it (without a trailing slash).
+
+

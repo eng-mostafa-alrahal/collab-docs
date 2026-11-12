@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ajaia-docs-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: MAX_UPLOAD_SIZE
+        value: "2097152"
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.12.8
+

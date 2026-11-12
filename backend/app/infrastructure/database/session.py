@@ -27,8 +27,12 @@ DEMO_USERS = [
 
 settings = get_settings()
 
-connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(settings.DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
+db_url = settings.sqlalchemy_database_url
+connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
+engine_kwargs = {"connect_args": connect_args, "pool_pre_ping": True}
+if not db_url.startswith("sqlite"):
+    engine_kwargs["pool_recycle"] = 300
+engine = create_engine(db_url, **engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
