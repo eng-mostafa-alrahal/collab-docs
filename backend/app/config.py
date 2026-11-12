@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg://ajaia:ajaia_dev_password@localhost:5432/ajaia_docs"
-    CORS_ORIGINS: str = "http://localhost:4200"
+    CORS_ORIGINS: str = "*"
     MAX_UPLOAD_SIZE: int = 2_097_152  # 2 MB
     ENVIRONMENT: str = "development"
 

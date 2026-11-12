@@ -13,11 +13,12 @@
 
 ## 2. Live Product
 
-- Frontend URL: `<INSERT_DEPLOYED_FRONTEND_URL>`
-- Backend API: `<INSERT_DEPLOYED_API_URL>`
-- API Documentation: `<INSERT_DEPLOYED_API_URL>/docs`
+- **Frontend URL:** https://collab-docs-1ed.pages.dev/
+- **Backend API:** `<INSERT_DEPLOYED_RENDER_API_URL>` (e.g. `https://ajaia-docs-api.onrender.com/api`)
+- **API Documentation (Swagger UI):** `<INSERT_DEPLOYED_RENDER_API_URL>/docs` (e.g. `https://ajaia-docs-api.onrender.com/docs`)
+- **Health Check Endpoint:** `<INSERT_DEPLOYED_RENDER_API_URL>/api/health`
 
-*(Note: The application is verified locally with Docker PostgreSQL, FastAPI, and Angular production build; public hosting URLs and walkthrough video recording should be populated once deployed/recorded.)*
+*(Deployed on Cloudflare Pages (Frontend), Render (FastAPI Backend), and Neon (Managed PostgreSQL).)*
 
 ## 3. Demo Accounts
 
